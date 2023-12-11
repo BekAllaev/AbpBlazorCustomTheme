@@ -1,41 +1,41 @@
-# Acme.BookStore
+Run this command in the root of our solution 
+```
+abp add-package Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme --with-source-code --add-to-solution-file
+```
 
-## About this solution
+Read this [article](https://docs.abp.io/en/abp/latest/UI/Blazor/Theming?UI=Blazor#global-styles-script) to add your custom styles
 
-This is a layered startup solution based on [Domain Driven Design (DDD)](https://docs.abp.io/en/abp/latest/Domain-Driven-Design) practises. All the fundamental ABP modules are already installed. 
+#### What to do when you added your custom styles?
 
-### Pre-requirements
+Go to directory where your blazor project is and run `abp bundle` command
 
-* [.NET 7.0+ SDK](https://dotnet.microsoft.com/download/dotnet)
-* [Node v18 or 20](https://nodejs.org/en)
+#### What is expected result?
 
-### Configurations
+Your `global.css` style should contain styles from `Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme`(this is the name of the razor class library that contain custom themes).
+You can compare [styles](https://github.com/BekAllaev/AbpBlazorCustomTheme/blob/master/packages/Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme/wwwroot/libs/abp/css/theme.css) from `Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme` and [`global.css`](https://github.com/BekAllaev/AbpBlazorCustomTheme/blob/master/src/Acme.BookStore.Blazor/wwwroot/global.css#L32878)
+from `Acme.BookStore.Blazor` and find out that styles from `Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme` have been copied to `global.css` (take a look to the line 32878)
 
-The solution comes with a default configuration that works out of the box. However, you may consider to change the following configuration before running your solution:
+#### What if you haven't get expected result?
 
-* Check the `ConnectionStrings` in `appsettings.json` files under the `Acme.BookStore.HttpApi.Host` and `Acme.BookStore.DbMigrator` projects and change it if you need.
+- Make sure styles inside `Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme` are inside `wwwroot` folder. ***Please take into account that you should create folder `wwwroot` inside `Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme` by yourself (there is not such folder by default)***.
+- Make sure that path of styles inside `BasicThemeBundleContributor` class in method `AddStyles` is right
+- Make sure that your file with styles have **"build action"** = *"content"* and **"copy to output directory"** = *"copy if newer"*
 
-### Before running the application
+#### What you should do if you want to move the theme to another solution
 
-* Run `abp install-libs` command on your solution folder to install client-side package dependencies. This step is automatically done when you create a new solution with ABP CLI. However, you should run it yourself if you have first cloned this solution from your source control, or added a new client-side package dependency to your solution.
-* Run `Acme.BookStore.DbMigrator` to create the initial database. This should be done in the first run. It is also needed if a new database migration is added to the solution later.
+1). Move `Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme` to the solution
+2). Add reference to this project from your blazor project
+3). Add `DependsOn` so your `(ProjectName)BlazorModule` class will be like this:
+```
+[DependsOn(
+typeof(........),
+typeof(........),
+typeof(........),
+typeof(AbpAspNetCoreComponentsWebAssemblyBasicThemeModule))] <---This is the name of the module where your custom theme is
+public class (ProjectName)BlazorModule : AbpModule
+{
+}
+```
+4). Run `abp bundle` in the directory where your blazor project is
 
-### Solution structure
-
-This is a layered monolith application that consists of the following applications:
-
-* `Acme.BookStore.DbMigrator`: A console application which applies the migrations and also seeds the initial data. It is useful on development as well as on production environment.
-* `Acme.BookStore.HttpApi.Host`: ASP.NET Core API application that is used to expose the APIs to the clients.
-* `Acme.BookStore.Blazor`: ASP.NET Core Blazor Server application that is the essential web application of the solution.
-
-## Deploying the application
-
-Deploying an ABP application is not different than deploying any .NET or ASP.NET Core application. However, there are some topics that you should care about when you are deploying your applications. You can check ABP's [Deployment documentation](https://docs.abp.io/en/abp/latest/Deployment/Index) before deploying your application.
-
-### Additional resources
-
-You can see the following resources to learn more about your solution and the ABP Framework:
-
-* [Web Application Development Tutorial](https://docs.abp.io/en/abp/latest/Tutorials/Part-1)
-* [Application Startup Template Structure](https://docs.abp.io/en/abp/latest/Startup-Templates/Application)
-* [LeptonX Lite Blazor UI](https://docs.abp.io/en/abp/latest/Themes/LeptonXLite/Blazor?UI=Blazor)
+If you have some problem please read "**What if you haven't get expected result?**"
