@@ -9,6 +9,16 @@ abp add-package Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme --with-sou
 
 Create this directory tree `wwwroot` -> `libs` -> `abp` -> `css` and create file `theme.css` inside `css` folder. `theme.css` file will contain your custom styles
 
+#### How to add project with themes to git stracking system
+
+**Background:** When you created theme project using this CLI command - `abp add-package Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme --with-source-code --add-to-solution-file`
+your project is ignored by git system by default so you can add this project to git system with following command:
+```
+git add --force packages
+```
+
+> "git add --force ***packages***", where ***packages*** is the name of directory where project with custom theme is generated
+
 #### What to do when you added your custom styles?
 
 Go to directory where your blazor project is and run `abp bundle` command
